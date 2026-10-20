@@ -1,0 +1,25 @@
+{
+  "name": "chw-app",
+  "version": "1.0.0",
+  "description": "Offline-First Community Health Worker (CHW) Records App",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "node server/test-sync.js",
+    "db:view": "node server/view-db.js"
+  },
+  "keywords": [
+    "offline-first",
+    "chw",
+    "sync",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
+  }
+}

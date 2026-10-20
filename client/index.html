@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AfyaSync - Offline-First CHW Records</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Network Status Bar (Deliverable 1 requirement) -->
+  <header class="status-bar" id="statusBar">
+    <div class="status-pill" id="statusPill">
+      <span class="status-dot"></span>
+      <span class="status-text" id="statusText">ONLINE</span>
+    </div>
+    <div class="sim-controls">
+      <label class="sim-label" for="simToggle">Simulate Disconnect:</label>
+      <input type="checkbox" id="simToggle" title="Simulate Offline Mode">
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="app-title-card" style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <div class="badge-row">
+          <span class="badge">East Africa Healthcare</span>
+          <span class="badge badge-accent">Offline-First PWA</span>
+        </div>
+        <h1>CHW Visit Logger</h1>
+        <p class="subtitle">Quick rural clinic & home-visit record entry</p>
+      </div>
+      <a href="/flutter/" class="btn btn-secondary" style="text-decoration:none; font-size:0.85rem; padding:6px 12px;">
+        📱 Open Flutter App
+      </a>
+    </div>
+
+    <!-- Sync Queue Card (Deliverable 2 requirement) -->
+    <section class="card queue-card">
+      <div class="queue-header">
+        <div>
+          <h2>Local Sync Queue</h2>
+          <p class="text-muted">Unsynced records stored securely on this device</p>
+        </div>
+        <div class="queue-counter" id="queueCounterBadge">
+          <span id="queueCount">0</span> pending
+        </div>
+      </div>
+
+      <div class="queue-actions">
+        <button id="syncNowBtn" class="btn btn-primary" disabled>
+          <span class="icon">🔄</span> Sync Queue to Server
+        </button>
+        <button id="refreshServerBtn" class="btn btn-secondary">
+          <span class="icon">📥</span> Fetch Server Records
+        </button>
+      </div>
+
+      <!-- Queue List -->
+      <div id="queueList" class="queue-list empty-state">
+        <p>No records currently pending sync.</p>
+      </div>
+    </section>
+
+    <!-- Visit Entry Form (Deliverable 1 requirement) -->
+    <section class="card form-card">
+      <h2>New Visit Entry</h2>
+      <form id="visitForm" novalidate>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="local_id">Allocated Entry ID (Auto-Generated per Entry)</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="local_id" name="local_id" readonly style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-family:monospace; font-weight:700; cursor:default;">
+              <button type="button" id="newIdBtn" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px; white-space:nowrap;" title="Generate a fresh ID">⚡ Allocate New ID</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="chw_id">CHW Identifier *</label>
+            <input type="text" id="chw_id" name="chw_id" required value="CHW-KKG-04" placeholder="e.g. CHW-KKG-04">
+            <span class="field-error" id="err-chw_id"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="village_name">Village / Cluster *</label>
+            <input type="text" id="village_name" name="village_name" required value="Shibuye" placeholder="e.g. Shibuye, Eregi">
+            <span class="field-error" id="err-village_name"></span>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="patient_name">Patient Full Name * (min 2 chars)</label>
+            <input type="text" id="patient_name" name="patient_name" required placeholder="e.g. Mary Atieno">
+            <span class="field-error" id="err-patient_name"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="visit_type">Visit Type *</label>
+            <select id="visit_type" name="visit_type" required>
+              <option value="Maternal">Maternal</option>
+              <option value="Child">Child</option>
+              <option value="General">General</option>
+            </select>
+            <span class="field-error" id="err-visit_type"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="urgency_level">Urgency Level *</label>
+            <select id="urgency_level" name="urgency_level" required>
+              <option value="Routine">Routine</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Emergency">Emergency</option>
+            </select>
+            <span class="field-error" id="err-urgency_level"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="vitals_bp">Blood Pressure (SYS/DIA) *</label>
+            <input type="text" id="vitals_bp" name="vitals_bp" required placeholder="120/80" pattern="^\d{2,3}/\d{2,3}$">
+            <span class="field-error" id="err-vitals_bp"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="vitals_temp">Body Temperature (°C) * [35.0 - 43.0]</label>
+            <input type="number" id="vitals_temp" name="vitals_temp" required step="0.1" min="35.0" max="43.0" placeholder="36.8">
+            <span class="field-error" id="err-vitals_temp"></span>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="visit_notes">Visit Notes (Optional)</label>
+            <textarea id="visit_notes" name="visit_notes" rows="2" placeholder="Clinical notes, medication dispensed, or referral remarks..."></textarea>
+            <span class="field-error" id="err-visit_notes"></span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="saveBtn" class="btn btn-save">
+            💾 Save Visit Record
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Synced Records on Server -->
+    <section class="card server-card">
+      <div class="queue-header">
+        <div>
+          <h2>Synced Records in Central Database</h2>
+          <p class="text-muted">Direct view of persisted SQLite records</p>
+        </div>
+        <button id="clearServerBtn" class="btn btn-danger-sm">Clear DB (Demo)</button>
+      </div>
+      <div id="serverList" class="server-list">
+        <p class="text-muted">Loading records from server...</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

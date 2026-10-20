@@ -1,0 +1,17 @@
+{
+  "records": [
+    {
+      "local_id": "client-uuid-001",
+      "chw_id": "CHW-KKG-04",
+      "patient_name": "Mary Atieno",
+      "village_name": "Shibuye",
+      "visit_type": "Maternal",
+      "vitals_bp": "120/80",
+      "vitals_temp": 37.2,
+      "urgency_level": "Routine",
+      "visit_notes": "First antenatal checkup",
+      "created_at_local": "2026-10-16T08:30:00.000Z",
+      "sync_status": "Syncing"
+    }
+  ]
+}
